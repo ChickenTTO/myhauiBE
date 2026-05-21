@@ -9,7 +9,33 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Middleware
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl/postman requests)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.some(allowed => {
+      const trimmed = allowed.trim();
+      if (trimmed === '*') return true;
+      return trimmed.toLowerCase() === origin.trim().toLowerCase();
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.warn(`Blocked by CORS: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // Routes

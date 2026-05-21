@@ -19,6 +19,7 @@ model User {
   BorrowRequests BorrowRequest[]
   AuditLogs      AuditLog[]
   ResearchReports ResearchReport[]
+  UsageLogs      UsageLog[]
 }
 
 model Asset {

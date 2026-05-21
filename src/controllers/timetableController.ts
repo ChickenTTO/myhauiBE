@@ -62,17 +62,17 @@ export const updateTimetable = async (req: Request, res: Response) => {
 // Xóa (Hỗ trợ xóa theo tuần hoặc id)
 export const deleteTimetable = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const idParam = req.params.id as string;
     
     // Nếu truyền id là chuỗi dạng "Tuần X", xóa toàn bộ tuần đó
-    if (isNaN(Number(id))) {
+    if (isNaN(Number(idParam))) {
        await prisma.timetable.deleteMany({
-          where: { tuanHoc: id }
+          where: { tuanHoc: idParam }
        });
-       return res.status(200).json({ message: `Đã xóa thành công ${id}` });
+       return res.status(200).json({ message: `Đã xóa thành công ${idParam}` });
     }
 
-    await prisma.timetable.delete({ where: { id: Number(id) } });
+    await prisma.timetable.delete({ where: { id: Number(idParam) } });
     res.status(200).json({ message: 'Xóa thành công' });
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi xóa' });
