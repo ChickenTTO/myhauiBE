@@ -24,8 +24,7 @@ export const createTimetable = async (req: Request, res: Response) => {
           tietHoc: Array.isArray(item.tietHoc) ? JSON.stringify(item.tietHoc) : item.tietHoc
        }));
        const newTimetables = await prisma.timetable.createMany({
-         data: mappedData,
-         skipDuplicates: true
+         data: mappedData
        });
        return res.status(201).json({ message: `Đã thêm ${newTimetables.count} tiết học` });
     }

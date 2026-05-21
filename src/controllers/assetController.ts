@@ -34,11 +34,16 @@ export const createAsset = async (req: Request, res: Response) => {
     
     // Support bulk create if data is array
     if (Array.isArray(data)) {
-      const newAssets = await prisma.asset.createMany({
-        data,
-        skipDuplicates: true // bỏ qua lỗi trùng mã tài sản nếu có
-      });
-      return res.status(201).json({ message: `Đã thêm ${newAssets.count} tài sản` });
+      let count = 0;
+      for (const item of data) {
+        try {
+          await prisma.asset.create({ data: item });
+          count++;
+        } catch (error) {
+          // Bỏ qua lỗi trùng mã tài sản hoặc lỗi khác nếu có
+        }
+      }
+      return res.status(201).json({ message: `Đã thêm ${count} tài sản` });
     }
 
     // Single create

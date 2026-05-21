@@ -3,7 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -57,7 +58,7 @@ model BorrowRequest {
   assetId        Int
   status         String   @default("PENDING") // PENDING, APPROVED, REJECTED
   purpose        String?
-  projectDetails String?  @db.Text
+  projectDetails String?
   advisorId      String?
   advisorName    String?
   startTime      DateTime?
