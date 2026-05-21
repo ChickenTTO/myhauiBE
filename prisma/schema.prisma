@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   // Lưu mật khẩu đã mã hóa (bcrypt)
+  fullName  String
+  role      String   @default("STUDENT") // ADMIN1, ADMIN2, TT_SXTM, LEADERSHIP, TEACHER, STUDENT, GUEST
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  BorrowRequests BorrowRequest[]
+  AuditLogs      AuditLog[]
+  ResearchReports ResearchReport[]
+}
+
+model Asset {
+  id         Int      @id @default(autoincrement())
+  assetCode  String   @unique
+  assetName  String
+  building   String
+  location   String
+  manager    String
+  status     String
+  details    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  BorrowRequests BorrowRequest[]
+}
+
+model Timetable {
+  id        Int      @id @default(autoincrement())
+  tuanHoc   String
+  thu       String
+  ngay      String
+  tietHoc   String   // Lưu dạng mảng JSON "[1,2,3]"
+  maLop     String
+  tenMon    String
+  giaoVien  String
+  phongHoc  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BorrowRequest {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  assetId        Int
+  status         String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  purpose        String?
+  projectDetails String?  @db.Text
+  advisorId      String?
+  advisorName    String?
+  startTime      DateTime?
+  endTime        DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  User  User  @relation(fields: [userId], references: [id])
+  Asset Asset @relation(fields: [assetId], references: [id])
+}
+
+model UsageLog {
+  id            Int      @id @default(autoincrement())
+  assetCode     String
+  userId        Int
+  action        String
+  status        String
+  evidenceImage String?
+  timestamp     DateTime @default(now())
+
+  User          User     @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String
+  details   String?
+  timestamp DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+}
+
+model ResearchReport {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  content     String?
+  fileUrl     String?
+  status      String   @default("SUBMITTED")
+  submittedAt DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+}
